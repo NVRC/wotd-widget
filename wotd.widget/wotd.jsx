@@ -1,9 +1,7 @@
 import { styled } from "uebersicht"
 
-import config from './src/config.js'
-
-const SUCCESS_TYPE = 'FETCH_SUCCEDED';
-const FAILED_TYPE = 'FETCH_FAILED';
+// import api_key and test_data
+const config = require( "./src/config.json" )
 
 export const get_current_date = () => {
     var today = new Date();
@@ -23,35 +21,65 @@ export const get_current_date = () => {
     return today;
 }
 const curr_date = get_current_date();
-const wotd_url = "https://api.wordnik.com/v4/words.json/wordOfTheDay?date="+curr_date+"&api_key="+api_key;
+const wotd_url = "https://api.wordnik.com/v4/words.json/wordOfTheDay?date="+curr_date+"&api_key="+config.api_key;
 
 
 const Container = styled("div")`
+    height: 200px;
+    width: 500px;
+    margin-left: 20px;
+    p {
+        color: white;
+        text-align: justify;
+        font-family: Bookman, sans-serif;
+    }
+    h1, h2 {
+        color: white;
+        text-align: left;
+        font-family: Palatino, sans-serif;
+    }
+
+`
+const Word = styled("h1")`
 
 `
 
-const Wotd = styled("div")(props => ({
-    height: "40px",
-    width: "40px",
-    marginRight: "5px"
-}))
+const Note = styled("p")`
+
+`
+
+const Defs = styled("div")`
+    margin-left: 30px;
+    text-align: justify;
+    padding-bottom: 5px;
+`
+
+const Def = styled("p")`
+    display: inline;
+`
+
+const PartOfSpeech = styled("h2")`
+    text-size: 20px;
+    display: inline;
+`
+
 
 
 export const initialState = { output: 'Fetching data' };
 
-
+/*
 export const command = (dispatch) =>
   fetch(wotd_url)
     .then((response) => {
         response.json().then((data)=>{
             //data = { } from wordnik api
-            dispatch({ output: data.word  });
+            dispatch({ type: 'FETCH_SUCCEDED', output: data  });
         })
-
     })
     .catch((error) => {
-      dispatch({ error: 'error' });
+      dispatch({ type: 'FETCH_FAILED', error: error });
     });
+*/
 
 export const updateState = (event, previousState) => {
   if (event.error) {
@@ -59,9 +87,10 @@ export const updateState = (event, previousState) => {
   }
   const temp_wotd = event.output;
   return {
-    output: temp_wotd,
+    output: temp_wotd
   };
 }
+
 
 
 export const refreshFrequency = false; // ms
@@ -69,11 +98,25 @@ export const refreshFrequency = false; // ms
 export const render = ({ output, error }) => {
     return error ? (
         <Container>
-            <div>Error: <strong>{String(error)}</strong></div>
+            <div>Error: <strong>{output}</strong></div>
         </Container>
     ) : (
         <Container>
-            <p>{output}</p>
+            <Word>{config.test_data.word}</Word>
+            <Note>{config.test_data.note}</Note>
+            {config.test_data.definitions.map((def, idx) => (
+
+                renderDef(def, idx)
+            ))}
         </Container>
+    );
+}
+//  Each JSX element must have a unique key attribute
+export const renderDef = (def, key) => {
+    return (
+        <Defs key={'wrapper'+key}>
+            <PartOfSpeech key={'pos'+key}>{def.partOfSpeech}</PartOfSpeech>
+            <Def key={'def'+key}> &bull; {def.text}</Def>
+        </Defs>
     );
 }
