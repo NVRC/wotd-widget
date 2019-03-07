@@ -50,6 +50,9 @@ const Defs = styled("div")`
     text-align: justify;
     padding-bottom: 5px;
 `
+const Header = styled("h3")`
+    color: white;
+`
 
 const Def = styled("p")`
     display: inline;
@@ -101,20 +104,20 @@ export const updateState = (event, previousState) => {
 export const refreshFrequency = 86400; // a full 24 hours (ms)
 
 export const render = ({ output, error }) => {
-    return error ? (
+    return !output ? (
         <Container>
-            <div>Error: <strong>{error}</strong></div>
+            <Word>Fetching data... <strong>{error}</strong></Word>
         </Container>
     ) : (
         <Container>
             <Word>{output.word}</Word>
             <Note>{output.note}</Note>
-            <PartOfSpeech><u>Definitions</u></PartOfSpeech>
+            <Header><u>Definitions</u></Header>
             {output.definitions.map((def, idx) => (
 
                 renderDef(def, idx)
             ))}
-            <PartOfSpeech><u>Examples</u></PartOfSpeech>
+            <Header><u>Examples</u></Header>
             {output.examples.map((ex, idx) => (
 
                 renderExamples(ex, idx)
